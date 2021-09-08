@@ -1,0 +1,186 @@
+package proyectotabla;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+/**
+ *
+ * @author alegr
+ */
+public class ProyectoTabla {
+
+    public static ArrayList<Equipos>SubirEquipos() throws FileNotFoundException, IOException{
+        ArrayList<Equipos> equipo = new ArrayList<>();
+        try{
+         FileInputStream f = new FileInputStream("C:\\Users\\alegr\\Downloads\\equipos.xlsx");
+        XSSFWorkbook libro = new XSSFWorkbook(f);
+        XSSFSheet hoja = libro.getSheetAt(0);
+        Iterator<Row> filas = hoja.iterator();
+        Iterator<Cell> celdas;
+        Row fila;
+        Cell celda;
+        int a = 0;
+        while(filas.hasNext()){
+         fila = filas.next();
+         celdas = fila.cellIterator();
+         Equipos e = new Equipos();
+         while(celdas.hasNext()){
+             celda = celdas.next();
+          if(a==0){
+            double b = celda.getNumericCellValue();
+            e.a = (int)b;
+                    
+          }  
+          if (a==1){
+              e.b = celda.getStringCellValue();
+          }
+          if (a==2){
+            double b =  celda.getNumericCellValue();
+            e.c = (int)b;
+                    
+          } if (a==3){
+            e.d = 0;
+          }
+          a++;
+         }
+         a = 0;
+         equipo.add(e);
+         
+        }
+        } catch(FileNotFoundException ex){
+            System.out.println("El archivo no existe ");
+        }
+        return equipo;
+    }
+    
+    public static int comparar(Equipos a, Equipos b){
+        int c = a.c-b.c;
+        return c==0?a.d-b.d:c;
+    }
+    public static void OrdenarTabla(ArrayList<Equipos> e){
+        for (int i=0; i<e.size();i++){
+        Equipos aux = e.get(i);
+        int x = i+1;
+        while (x<e.size()){
+            Equipos reg = e.get(x);
+            if (comparar(aux,reg) < 0){
+                e.set(i, reg);
+                e.set(x, aux);
+                i--;
+                break;
+                
+            }
+            x++;
+        }
+    }
+    }
+    public static void MostrarTabla(ArrayList<Equipos> a){
+        OrdenarTabla(a);
+        for (int i =0; i<a.size(); i++){
+            Equipos reg = a.get(i);
+            System.out.println(reg.b+":"+reg.c+",goles: "+reg.d);
+        }
+    }
+    
+    public static void Proceso(ArrayList<Equipos> c) throws IOException{
+        try{
+         FileInputStream f = new FileInputStream("C:\\Users\\alegr\\Downloads\\partidos.xlsx");
+        XSSFWorkbook libro = new XSSFWorkbook(f);
+        for(int i=0;i<libro.getNumberOfSheets();i++){
+        XSSFSheet hoja = libro.getSheetAt(i);
+        Iterator<Row> filas = hoja.iterator();
+        Iterator<Cell> celdas;
+        Row fila;
+        Cell celda;
+        int a = 0;
+        while(filas.hasNext()){
+         fila = filas.next();
+         celdas = fila.cellIterator();
+         Partidos e = new Partidos();
+         while(celdas.hasNext()){
+             celda = celdas.next();
+          if(a==0){
+            double b = celda.getNumericCellValue();
+            e.a = (int)b;            
+          }  
+          if (a==1){
+              double b = celda.getNumericCellValue();
+              e.b = (int)b;
+          }
+          if (a==2){
+            double b =  celda.getNumericCellValue();
+            e.c = (int)b;
+                    
+          }
+          if (a==3){
+            double b =  celda.getNumericCellValue();
+            e.d = (int)b;
+          
+          
+         }
+        a++;
+        }
+          a = 0;
+         Puntos (c,e);
+        }
+        }
+        } catch(FileNotFoundException ex){
+            System.out.println("El archivo no existe ");
+        }
+        
+    }
+    public static int BuscarEquipo(ArrayList<Equipos> d, int a){
+        int ret = 0;
+        for (int i=0; i<d.size();i++){
+            Equipos aux = d.get(i);
+            if(aux.a == a){
+                ret = i;
+                break;
+                
+            }
+        }
+        return ret;
+    }
+    public static void Puntos (ArrayList<Equipos> c, Partidos reg){
+        if (reg.b > reg.c){
+           int pos = BuscarEquipo(c,reg.a); 
+           Equipos aux = c.get(pos);
+           aux.c = aux.c +3;
+           aux.d = aux.d+reg.b;
+           int poss = BuscarEquipo(c,reg.d); 
+            Equipos auxx = c.get(poss);
+            auxx.d = auxx.d+reg.c;
+        }
+        if (reg.c > reg.b){
+            int pos = BuscarEquipo(c,reg.d); 
+            Equipos aux = c.get(pos);
+            aux.c = aux.c +3;
+            aux.d = aux.d + reg.c;
+            int poss = BuscarEquipo(c,reg.a); 
+           Equipos auxx = c.get(poss);
+           auxx.d = auxx.d+reg.b;
+        }
+        if (reg.b == reg.c){
+            int pos = BuscarEquipo(c,reg.a); 
+            Equipos aux = c.get(pos);
+            aux.c = aux.c +1;
+            aux.d = aux.d+reg.b;
+            int poss = BuscarEquipo(c,reg.d); 
+            Equipos auxx = c.get(poss);
+            auxx.c = auxx.c +1;
+            auxx.d = auxx.d+reg.b;
+        }
+    }
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+        ArrayList<Equipos> equipos = SubirEquipos();
+        Proceso(equipos);
+        MostrarTabla(equipos);
+    }   
+}
