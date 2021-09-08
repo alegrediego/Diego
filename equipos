@@ -1,0 +1,12 @@
+package proyectotabla;
+
+/**
+ *
+ * @author alegr
+ */
+public class Equipos {
+    int a;
+    String b;
+    int c;
+    int d;
+}
