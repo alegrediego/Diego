@@ -1,0 +1,12 @@
+package proyectotabla;
+
+/**
+ *
+ * @author alegr
+ */
+public class Partidos {
+    int a;
+    int b;
+    int c;
+    int d;
+}
